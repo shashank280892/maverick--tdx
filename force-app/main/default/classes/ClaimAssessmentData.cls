@@ -5,6 +5,7 @@ public with sharing class ClaimAssessmentData {
         //List<ClaimAssesmentResponse> assessmentResponse = new List<ClaimAssesmentResponse>();
         ClaimAssesmentResponse assResp = new ClaimAssesmentResponse();
         List<ClaimData> datalist = new List<ClaimData>();
+        List<RiderUpdate> riderDataList = new List<RiderUpdate>();
         ClaimData data = new ClaimData();
         if(inputParams.isEmpty()) {
             data.isClaimfound = false;
@@ -87,15 +88,41 @@ public with sharing class ClaimAssessmentData {
             
         }
         assResp.datalist = datalist;
+        riderDataList = updateRiderStatus(assResp.datalist);
+        assResp.riderList = riderDataList;
         return new List<ClaimAssesmentResponse> {assResp};
         
         
          
        // return assessmentResponse;
     }
+    
+    public static List<RiderUpdate> updateRiderStatus(List<ClaimData> dataList){
+        List<RiderUpdate> riderList = new List<RiderUpdate>();
+        RiderUpdate riderObj;
+        for(ClaimAssessmentData.ClaimData obj : dataList){
+            riderObj = new RiderUpdate();
+            if(obj.roomModifier =='false'){
+               riderObj.roomRiderUpdate ='You can opt for Room Modifier as you have not have one'; 
+            }
+            if(obj.jumpRider =='false'){
+               riderObj.jumpRiderUpdate ='You can opt for Room Modifier as you have not have one'; 
+            }
+            riderList.add(riderObj);
+        }
+        return riderList;
+    }
     public class ClaimAssesmentResponse {
         @InvocableVariable (description='Insurance Claim details Name for users')
         public List<ClaimData> datalist;
+        @InvocableVariable (description='Insurance Rider Status details for users')
+        public List<RiderUpdate> riderList;
+    }
+    
+    public class RiderUpdate{
+        public String roomRiderUpdate;
+        public String jumpRiderUpdate;
+        
     }
     public class ClaimData{
         public String claimType;
